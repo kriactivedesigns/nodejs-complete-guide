@@ -16,6 +16,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(adminRoutes);
 app.use(shopRoutes)
 
+// Handling all other requests which are not handled by the other roters
+app.use((req,res,next) => {
+    res.status(404).send('<h1>Page Not Found</h1>')
+})
+
 app.listen(3000, () => {
     console.log("Application runs at localhost:3000");
 })
