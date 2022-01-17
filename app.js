@@ -22,7 +22,6 @@ app.use(shopRoutes)
 
 // Handling all other requests which are not handled by the other roters
 app.use((req,res,next) => {
-    console.log("Inside 404 route...")
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'))
 })
 
