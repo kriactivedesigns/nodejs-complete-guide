@@ -14,6 +14,9 @@ app.get('/favicon.ico',(req,res) => res.status(204));
 // This will parse only form data
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Serving static files from public folder
+app.use(express.static(path.join(__dirname, 'public')))
+
 app.use('/admin',adminRoutes);
 app.use(shopRoutes)
 
