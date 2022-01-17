@@ -1,11 +1,12 @@
 const express = require('express');
 const path = require('path')
+const rootDir = require('../util/path')
 
 const router = express.Router();
 
 router.get('/add-product', (req, res, next) => {
     console.log("Inside /add-product get route...")
-    res.sendFile(path.join(__dirname, '../', 'views', 'add-product.html'))
+    res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
     //next() // Allows the request to continue to the next middleware in line
 })
 
