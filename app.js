@@ -4,7 +4,7 @@ const path = require('path')
 
 const app = express()
 
-const adminRoutes = require('./routes/admin');
+const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop')
 
 app.get('/favicon.ico',(req,res) => res.status(204));
@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Serving static files from public folder
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/admin',adminRoutes);
+app.use('/admin', adminData.routes);
 app.use(shopRoutes)
 
 // Handling all other requests which are not handled by the other roters
