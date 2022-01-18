@@ -25,15 +25,16 @@ exports.getProducts = (req, res,next) => {
     // res.sendFile(path.join(rootDir, 'views', 'shop.html'));
     // res.render('shop', { prods: products, pageTitle: 'My Shop', path: '/' }) // pug
 
-    const products = Product.fetchAll()
-    console.log(products)
-    res.render('shop', { 
-        prods: products, 
-        pageTitle: 'My Shop', 
-        path: '/', 
-        hasProducts: products.length > 0,
-        activeShop: true,
-        productCSS: true,
-        //layout: false 
-    }) // handlebars
+    Product.fetchAll((products) => {
+        res.render('shop', {
+            prods: products,
+            pageTitle: 'My Shop',
+            path: '/',
+            hasProducts: products.length > 0,
+            activeShop: true,
+            productCSS: true,
+            //layout: false
+        }) // handlebars
+    })
+
 }
