@@ -8,7 +8,15 @@ const products = []
 
 router.get('/add-product', (req, res, next) => {
     // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
-    res.render('add-product', { pageTitle: 'Add Product', path: '/admin/add-product' })
+    // res.render('add-product', { pageTitle: 'Add Product', path: '/admin/add-product' }) // pug
+    res.render('add-product', { 
+        pageTitle: 'Add Product', 
+        path: '/admin/add-product', 
+        activeAddProduct: true,
+        productCSS: true,
+        formsCSS: true,
+        //layout: false 
+    }) // handlebars
     //next() // Allows the request to continue to the next middleware in line
 })
 
