@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const rootDir = require('../util/path');
-const { uuid } = require('uuidv4');
+const { v4: uuidv4 } = require('uuid');
 
+const Cart = require('./cart')
 const p = path.join(rootDir, 'data', 'products.json');
 
 const getProductsFromFile = cb => {
@@ -23,13 +24,22 @@ module.exports = class Product {
         this.price = price;
     }
 
-    save() {
-        this.id = uuid();
+    save(id, cb) {
         getProductsFromFile(products => {
-            products.push(this)
+            if(id){
+                const currentProductIndex = products.findIndex(product => product.id === id)
+                this.id = id
+                products = [...products]
+                products[currentProductIndex] = this
+            } else{
+                this.id = uuidv4();
+                products.push(this)
+            }
             fs.writeFile(p, JSON.stringify(products), (err) => {
                 if(err) {
                     console.log(err)
+                } else {
+                    cb()
                 }
             })
         })
@@ -44,6 +54,20 @@ module.exports = class Product {
             const product = products.find(prd => prd.id === id)
             cb(product)
         }))
+    }
+
+    static deleteById(id, cb) {
+        getProductsFromFile(products => {
+            const updatedProducts = products.filter(product => product.id !== id)
+            fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+                if(err) {
+                    console.log(err)
+                }else {
+                    Cart.deleteProduct(id, products.find(prod => prod.id === id).price)
+                    cb()
+                }
+            })
+        })
     }
 
 }
