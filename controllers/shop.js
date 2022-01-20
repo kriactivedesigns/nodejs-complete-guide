@@ -50,7 +50,6 @@ exports.getCart = (req,res,next) => {
                     }
                 }
             }
-            console.log(cartProducts)
             res.render('shop/cart', {
                 prods: cartProducts,
                 pageTitle: 'Cart',
