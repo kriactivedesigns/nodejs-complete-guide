@@ -11,3 +11,7 @@
 > "runtimeExecutable": "nodemon",
 > "console": "integratedTerminal"
 >
+
+
+Sequelize will handle the Database Table, so we don't need existing database table.
+But for convenience we will create a new table and keep the existing table in db
