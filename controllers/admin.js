@@ -26,7 +26,7 @@ exports.getAddProduct = (req, res, next) => {
 // Saves the new product with post request
 exports.postAddProduct = (req, res, next) => {
     const { title, imageUrl, price, description } = req.body
-    const product = new Product(title,imageUrl,price,description)
+    const product = new Product(title,imageUrl,price,description, req.user._id)
     product.save()
         .then(result => {
             console.log('New Product inserted...')
@@ -56,7 +56,7 @@ exports.getEditProduct = (req, res, next) => {
 // Saves the edited product with post request
 exports.postEditProduct = (req, res, next) => {
     const { id, title, imageUrl, price, description } = req.body
-    const product = new Product(title,imageUrl,price,description,id)
+    const product = new Product(title,imageUrl,price,description, req.user._id, id)
     product.save()
         .then(result => {
             console.log("Product updated...")
