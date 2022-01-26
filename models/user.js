@@ -66,8 +66,15 @@ class User {
                             }
                         }
                     )
+                    .then(result => {
+                        return products
+                    }).catch(err => err)
                 }
-                return products.map(product => {
+                return products
+               
+            })
+            .then(products => {
+                 return products.map(product => {
                     return {
                         ...product,
                         quantity: this.cart.items.find(i => i.productId.toString() === product._id.toString()).quantity
