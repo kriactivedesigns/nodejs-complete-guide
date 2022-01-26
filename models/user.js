@@ -6,6 +6,7 @@ const Product = require('./product');
 const ObjectId = mongodb.ObjectId;
 
 class User {
+    
     constructor(id, username, email, cart) {
         this._id = id;
         this.name = username;
@@ -133,7 +134,41 @@ class User {
         const db = getDb();
         return db.collection('orders').find({ userId: new ObjectId(this._id)}).toArray()
             .then(orders => {
-                console.log("Orders retieved...")
+                return db.collection('products').find().toArray()
+                    .then(allProducts => {
+                        const updatedOrders = []
+                        orders.forEach(order => {
+                            const updatedItemsInOrder = []
+                            order.items.map(item => {
+                                const existingProduct = allProducts.find(product => product._id.toString() === item._id.toString())
+                                if(existingProduct){
+                                    updatedItemsInOrder.push({
+                                        ...existingProduct,
+                                        quantity: item.quantity
+                                    })
+                                }
+                            })
+                            
+                            if(updatedItemsInOrder.length > 0) {
+                                updatedOrders.push({
+                                    ...order,
+                                    items: updatedItemsInOrder
+                                })
+                            }
+                        })
+                        return updatedOrders
+                    })
+            })
+            .then(updatedOrders => {
+                return db.collection('orders').drop()
+                    .then(() => {
+                        return db.collection('orders').insertMany(updatedOrders)
+                    })
+            })
+            .then(() => {
+                return db.collection('orders').find({ userId: new ObjectId(this._id)}).toArray()
+            })
+            .then(orders => {
                 return orders
             })
             .catch(err => err)
