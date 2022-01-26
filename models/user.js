@@ -49,6 +49,24 @@ class User {
         const prodIds = this.cart.items.map(item => item.productId)
         return db.collection('products').find({ _id: { $in: prodIds }}).toArray()
             .then(products => {
+                if(this.cart.items.length > products.length) {
+                    console.log("Some products in cart missing...")
+                    const updatedCartItems = []
+                    this.cart.items.map(item => {
+                        if(products.find(product => product._id.toString() === item.productId.toString())) {
+                            updatedCartItems.push(item)
+                        }
+                    })
+                    this.cart.items = updatedCartItems
+                    db.collection('users').updateOne(
+                        {_id: new ObjectId(this._id)},
+                        {
+                            $set: {
+                                cart: { items: updatedCartItems }
+                            }
+                        }
+                    )
+                }
                 return products.map(product => {
                     return {
                         ...product,
