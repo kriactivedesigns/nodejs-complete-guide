@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const isAuth = require('./middleware/is-auth');
 const authRoutes = require('./routes/auth');
@@ -41,6 +42,7 @@ app.use(session({
 }));
 
 app.use(csrfProtection);
+app.use(flash());
 
 // Setting up user initially, ( commented out since we are using login )
 app.use((req,res,next) => {

@@ -2,9 +2,17 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 exports.getLogin = (req,res,next) => {
+    let message = req.flash('error');
+    if(message.length > 0) {
+        message = message[0]
+    }else {
+        message = null
+    }
+
     res.render('auth/login',{
         pageTitle: 'Login',
-        path: '/login'
+        path: '/login',
+        errorMessage: message
     })
 }
 
@@ -14,6 +22,7 @@ exports.postLogin = (req,res,next) => {
         .then(user => {
             if(!user) {
                 console.log("Invalid user...")
+                req.flash('error','Invalid Username or Password')
                 return res.redirect('/login')
             }
             bcrypt.compare(password, user.password)
@@ -26,11 +35,12 @@ exports.postLogin = (req,res,next) => {
                             res.redirect('/')
                         })
                     }
-                    console.log("Invalid password...")
+                    req.flash('error','Invalid Username or Password')
                     return res.redirect('/login')
                 })
                 .catch(err => {
                     console.log(err)
+                    req.flash('error','Some unknown error occurd!!!')
                     res.redirect('/login')
                 })
         })
@@ -38,18 +48,31 @@ exports.postLogin = (req,res,next) => {
 }
 
 exports.getSignup = (req,res,next) => {
+    let message = req.flash('error');
+    if(message.length > 0) {
+        message = message[0]
+    }else {
+        message = null
+    }
+
     res.render('auth/signup',{
         pageTitle: 'Signup',
-        path: '/signup'
+        path: '/signup',
+        errorMessage: message
     })
 }
 
 exports.postSignup = (req,res,next) => {
     const { name, email, password, confirmPassword } = req.body;
+    if(password !== confirmPassword) {
+        req.flash('error','Passwords do not match!!!')
+        return res.redirect('/signup')
+    }
     User.findOne({ email: email })
         .then(user => {
             if(user) {
                 console.log("User already exists...")
+                req.flash('error','E-Mail already exists!!!')
                 return res.redirect('/signup')
             }
             bcrypt
