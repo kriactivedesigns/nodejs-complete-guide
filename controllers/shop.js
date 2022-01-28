@@ -2,33 +2,30 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 
 exports.getProducts = (req, res,next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     Product.find()
     .then(products => {
         res.render('shop/product-list', {
             prods: products,
             pageTitle: 'All Products',
             path: '/products',
-            isAuthenticated: isLoggedIn
+            isAuthenticated: req.session.isLoggedIn
         })
     })
 }
 
 exports.getIndex = (req,res,next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     Product.find()
         .then(products => {
             res.render('shop/index', {
                 prods: products,
                 pageTitle: 'All Products',
                 path: '/',
-                isAuthenticated: isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             })
         })
 }
 
 exports.getProductDetail = (req, res,next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     const { productId } = req.params
     Product.findById(productId)
         .then(product => {
@@ -36,7 +33,7 @@ exports.getProductDetail = (req, res,next) => {
                 product: product,
                 pageTitle: product.title,
                 path: '/products',
-                isAuthenticated: isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             })
         })
         .catch(err => {
@@ -45,7 +42,6 @@ exports.getProductDetail = (req, res,next) => {
 }
 
 exports.getCart = (req,res,next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     req.user
         .getCartItems()
         .then(products => {
@@ -53,7 +49,7 @@ exports.getCart = (req,res,next) => {
                 products: products,
                 pageTitle: `${req.user.name}'s Cart`,
                 path: '/cart',
-                isAuthenticated: isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
         })
     })
 }
@@ -102,7 +98,6 @@ exports.postOrder = (req,res,next) => {
 }
 
 exports.getOrders = (req,res,next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     Order.find({
         userId: req.user
     })
@@ -123,7 +118,7 @@ exports.getOrders = (req,res,next) => {
             orders: orders,
             pageTitle: 'Orders',
             path: '/orders',
-            isAuthenticated: isLoggedIn
+            isAuthenticated: req.session.isLoggedIn
         })
     })
 }

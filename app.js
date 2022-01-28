@@ -4,6 +4,7 @@ const path = require('path');
 const errorController = require('./controllers/error')
 const app = express();
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
@@ -18,6 +19,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Serving static files from public folder
 app.use(express.static(path.join(__dirname, 'public')))
+
+// setting session
+app.use(session({
+    secret: 'my secret key',
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.use((req,res,next) => {
     User.findById("61f1ac7822f2243def8f3e20")

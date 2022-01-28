@@ -1,7 +1,6 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res,next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     Product.find()
         // .select('title price -_id') // retrives only selected fields
         //.populate('userId') // tells mongoose to populate data in that field rather than just userid
@@ -10,7 +9,7 @@ exports.getProducts = (req, res,next) => {
                 prods: products,
                 pageTitle: 'All Products',
                 path: '/admin/products',
-                isAuthenticated: isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             })
         })
         .catch(err => {
@@ -20,12 +19,11 @@ exports.getProducts = (req, res,next) => {
 
 // Returns the page to add new product
 exports.getAddProduct = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
         editing: false,
-        isAuthenticated: isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
     })
 }
 
@@ -50,7 +48,6 @@ exports.postAddProduct = (req, res, next) => {
 
 // Return the page to edit existing product
 exports.getEditProduct = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie')?.split("=")[1]
     const productId = req.params.productId
     Product.findById(productId)
         .then(product => {
@@ -59,7 +56,7 @@ exports.getEditProduct = (req, res, next) => {
                 path: '/admin/add-product',
                 product: product,
                 editing: true,
-                isAuthenticated: isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             })
         })
         .catch(err => {
