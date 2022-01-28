@@ -36,28 +36,14 @@ app.use(session({
     store: store
 }));
 
+// Setting up user initially, ( commented out since we are using login )
 app.use((req,res,next) => {
-    User.findById("61f1ac7822f2243def8f3e20")
+    User.findById(req.session.user?._id)
         .then(user => {
-            if(!user) {
-                const user = new User({
-                    name: 'ARUN',
-                    email: 'arun@mongoose3.com',
-                    cart: []
-                })
-                return user.save()
-            }
-            else {
-                return user
-            }
+            req.user = user
+            next()
         })
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(err => {
-            console.log(err)
-        })
+        .catch(err => console.log(err))
 })
 
 app.use(authRoutes);
