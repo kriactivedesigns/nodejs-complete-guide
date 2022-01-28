@@ -5,6 +5,7 @@ const errorController = require('./controllers/error')
 const app = express();
 const mongoose = require('mongoose');
 
+const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const User = require('./models/user');
@@ -42,6 +43,7 @@ app.use((req,res,next) => {
         })
 })
 
+app.use(authRoutes);
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
