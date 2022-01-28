@@ -5,7 +5,6 @@ exports.getProducts = (req, res,next) => {
         // .select('title price -_id') // retrives only selected fields
         //.populate('userId') // tells mongoose to populate data in that field rather than just userid
         .then(products => {
-            console.log(products)
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'All Products',

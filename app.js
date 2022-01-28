@@ -35,7 +35,6 @@ app.use((req,res,next) => {
         })
         .then(user => {
             req.user = user;
-            console.log(user)
             next();
         })
         .catch(err => {
