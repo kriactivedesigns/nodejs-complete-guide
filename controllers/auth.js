@@ -1,11 +1,10 @@
 const User = require('../models/user');
 
 exports.getLogin = (req,res,next) => {
-    req.session.isLoggedIn = false;
     res.render('auth/login',{
         pageTitle: 'Login',
         path: '/login',
-        isAuthenticated: req.isLoggedIn
+        isAuthenticated: false
     })
 }
 
@@ -20,6 +19,39 @@ exports.postLogin = (req,res,next) => {
             res.redirect('/')
         })
         .catch(err => console.log(err))
+}
+
+exports.getSignup = (req,res,next) => {
+    res.render('auth/signup',{
+        pageTitle: 'Signup',
+        path: '/signup',
+        isAuthenticated: false
+    })
+}
+
+exports.postSignup = (req,res,next) => {
+    const { name, email, password, confirmPassword } = req.body;
+    User.findOne({ email: email })
+        .then(user => {
+            if(user) {
+                return res.redirect('/signup')
+            }
+            const newUser = new User({
+                name: name,
+                email: email,
+                password: password,
+                cart: { items: [] }
+            })
+            return newUser.save()
+        })
+        .then(result => {
+            res.redirect('/login')
+        })
+        .catch(err => console.log(err))
+    // res.render('auth/signup',{
+    //     pageTitle: 'Signup',
+    //     path: '/signup'
+    // })
 }
 
 exports.postLogout = (req,res,next) => {
