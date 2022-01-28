@@ -4,8 +4,7 @@ const bcrypt = require('bcryptjs');
 exports.getLogin = (req,res,next) => {
     res.render('auth/login',{
         pageTitle: 'Login',
-        path: '/login',
-        isAuthenticated: false
+        path: '/login'
     })
 }
 
@@ -41,8 +40,7 @@ exports.postLogin = (req,res,next) => {
 exports.getSignup = (req,res,next) => {
     res.render('auth/signup',{
         pageTitle: 'Signup',
-        path: '/signup',
-        isAuthenticated: false
+        path: '/signup'
     })
 }
 

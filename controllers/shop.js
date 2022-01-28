@@ -7,8 +7,7 @@ exports.getProducts = (req, res,next) => {
         res.render('shop/product-list', {
             prods: products,
             pageTitle: 'All Products',
-            path: '/products',
-            isAuthenticated: req.session.isLoggedIn
+            path: '/products'
         })
     })
 }
@@ -19,8 +18,7 @@ exports.getIndex = (req,res,next) => {
             res.render('shop/index', {
                 prods: products,
                 pageTitle: 'All Products',
-                path: '/',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/'
             })
         })
 }
@@ -32,8 +30,7 @@ exports.getProductDetail = (req, res,next) => {
             res.render('shop/product-detail', {
                 product: product,
                 pageTitle: product.title,
-                path: '/products',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/products'
             })
         })
         .catch(err => {
@@ -48,8 +45,7 @@ exports.getCart = (req,res,next) => {
             res.render('shop/cart', {
                 products: products,
                 pageTitle: `${req.user.name}'s Cart`,
-                path: '/cart',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/cart'
         })
     })
 }
@@ -117,8 +113,7 @@ exports.getOrders = (req,res,next) => {
         res.render('shop/orders', {
             orders: orders,
             pageTitle: 'Orders',
-            path: '/orders',
-            isAuthenticated: req.session.isLoggedIn
+            path: '/orders'
         })
     })
 }
