@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
+const isAuth = require('./middleware/is-auth');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -47,7 +48,7 @@ app.use((req,res,next) => {
 })
 
 app.use(authRoutes);
-app.use('/admin', adminRoutes);
+app.use('/admin', isAuth, adminRoutes);
 app.use(shopRoutes);
 
 // Handling all other requests which are not handled by the other roters
