@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res,next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('shop/product-list', {
                 prods: products,
@@ -12,7 +12,7 @@ exports.getProducts = (req, res,next) => {
 }
 
 exports.getIndex = (req,res,next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('shop/index', {
                 prods: products,
@@ -24,7 +24,7 @@ exports.getIndex = (req,res,next) => {
 
 exports.getProductDetail = (req, res,next) => {
     const { productId } = req.params
-    Product.fetchById(productId)
+    Product.findById(productId)
         .then(product => {
             res.render('shop/product-detail', {
                 product: product,
@@ -38,10 +38,11 @@ exports.getProductDetail = (req, res,next) => {
 }
 
 exports.getCart = (req,res,next) => {
-    req.user.getCart()
-        .then(cart => {
+    req.user
+        .getCartItems()
+        .then(products => {
             res.render('shop/cart', {
-                products: cart,
+                products: products,
                 pageTitle: `${req.user.name}'s Cart`,
                 path: '/cart'
        })
@@ -60,7 +61,7 @@ exports.postCartDeleteCartItem = (req,res,next) => {
 
 exports.postCart = (req,res,next) => {
     const productId = req.body.productId
-    Product.fetchById(productId)
+    Product.findById(productId)
         .then(product => {
             return req.user.addToCart(product)
         })

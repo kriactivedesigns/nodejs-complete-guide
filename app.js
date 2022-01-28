@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const errorController = require('./controllers/error')
 const app = express();
-const { mongoConnect } = require('./util/database');
+const mongoose = require('mongoose');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -19,9 +19,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use((req,res,next) => {
-    User.findById("61ecf6d59ab5f994c0afbf94")
+    User.findById("61f1ac7822f2243def8f3e20")
         .then(user => {
-            req.user = new User(user._id, user.name, user.email, user.cart);
+            if(!user) {
+                const user = new User({
+                    name: 'ARUN',
+                    email: 'arun@mongoose3.com',
+                    cart: []
+                })
+                return user.save()
+            }
+            else {
+                return user
+            }
+        })
+        .then(user => {
+            req.user = user;
+            console.log(user)
             next();
         })
         .catch(err => {
@@ -35,9 +49,12 @@ app.use(shopRoutes);
 // Handling all other requests which are not handled by the other roters
 app.use(errorController.get404);
 
-mongoConnect(() => {
+mongoose.connect('mongodb+srv://arun-mohanan:arun-mohanan-pass@nodejscomplete.ptbsk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+.then(result => {
     app.listen(3000, () => {
         console.log("Application runs at localhost:3000");
     });
-});
+})
+.catch(err => console.log(err))
+
 
