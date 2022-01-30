@@ -26,8 +26,6 @@ router.post(
         .isLength({ min: 5 })
         .isAlphanumeric(),
     body('confirmPassword')
-        .isLength({ min: 5 })
-        .isAlphanumeric()
         .custom((value, { req }) => {
             if(value !== req.body.password){
                 throw new Error("Passwords do not match")

@@ -14,7 +14,8 @@ exports.getLogin = (req,res,next) => {
     res.render('auth/login',{
         pageTitle: 'Login',
         path: '/login',
-        errorMessage: message
+        errorMessage: message,
+        oldInput: null
     })
 }
 
@@ -25,7 +26,11 @@ exports.postLogin = (req,res,next) => {
         return res.status(422).render('auth/login',{
             pageTitle: 'Login',
             path: '/login',
-            errorMessage: errors.array()[0].msg
+            errorMessage: errors.array()[0].msg,
+            oldInput: {
+                email: email,
+                password: password
+            }
         })
     }
     User.findOne({ email: email })
@@ -62,18 +67,25 @@ exports.getSignup = (req,res,next) => {
     res.render('auth/signup',{
         pageTitle: 'Signup',
         path: '/signup',
-        errorMessage: message
+        errorMessage: message,
+        oldInput: null
     })
 }
 
 exports.postSignup = (req,res,next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, confirmPassword } = req.body;
     const errors = validationResult(req)
     if(!errors.isEmpty()){
         return res.status(422).render('auth/signup',{
                 pageTitle: 'Signup',
                 path: '/signup',
-                errorMessage: errors.array()[0].msg
+                errorMessage: errors.array()[0].msg,
+                oldInput: {
+                    name: name,
+                    email: email,
+                    password: password,
+                    confirmPassword: confirmPassword
+                }
             })
     }
     bcrypt
