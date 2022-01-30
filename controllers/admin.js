@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res,next) => {
-    Product.find()
+    Product.find({ userId: req.user._id })
         // .select('title price -_id') // retrives only selected fields
         //.populate('userId') // tells mongoose to populate data in that field rather than just userid
         .then(products => {
@@ -47,8 +47,11 @@ exports.postAddProduct = (req, res, next) => {
 // Return the page to edit existing product
 exports.getEditProduct = (req, res, next) => {
     const productId = req.params.productId
-    Product.findById(productId)
+    Product.findOne({ _id: productId, userId: req.user._id })
         .then(product => {
+            if(!product) {
+                return res.redirect('/')
+            }
             res.render('admin/edit-product', {
                 pageTitle: 'Add Product',
                 path: '/admin/add-product',
@@ -65,8 +68,11 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
     const { id, title, imageUrl, price, description } = req.body
 
-    Product.findById(id)
+    Product.findOne({ _id: id, userId: req.user._id })
     .then(product => {
+        if(!product) {
+            return res.redirect('/')
+        }
         product.title = title;
         product.imageUrl = imageUrl;
         product.price = price;
@@ -85,10 +91,14 @@ exports.postEditProduct = (req, res, next) => {
 // Delete the product with id
 exports.postDeleteProduct = (req, res, next) => {
     const id = req.body.productId;
-    Product.findByIdAndRemove(id)
+    Product.deleteOne({ _id: id, userId: req.user._id })
         .then(result => {
-            console.log("Product deleted...")
-            res.redirect('/admin/products')
+            console.log(result)
+            if(result.deletedCount > 0) {
+                console.log("Product deleted...")
+                return res.redirect('/admin/products')
+            }
+            res.redirect('/')
         })
         .catch(err => {
             console.log(err)
