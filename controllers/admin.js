@@ -96,7 +96,6 @@ exports.postEditProduct = (req, res, next) => {
     const { id, title, imageUrl, price, description } = req.body
 
     const errors = validationResult(req)
-    console.log(errors)
     if(!errors.isEmpty()) {
         return res.status(422).render('admin/edit-product', {
             pageTitle: 'Add Product',

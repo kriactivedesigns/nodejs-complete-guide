@@ -14,26 +14,30 @@ router.get('/products', adminController.getProducts)
 // app.post will trigger only for incoming post request
 router.post(
     '/add-product',
-    check('title')
-        .isLength({ min: 3 })
-        .trim(),
-    check('imageUrl').isURL(),
-    check('price').isFloat(),
-    check('description')
-        .isLength({ min: 5, max: 200 })
-        .trim(),
+    [
+        check('title')
+            .isLength({ min: 3 })
+            .trim(),
+        check('imageUrl').isURL(),
+        check('price').isFloat(),
+        check('description')
+            .isLength({ min: 5, max: 200 })
+            .trim()
+    ],
     adminController.postAddProduct
 )
 router.post(
     '/edit-product',
-    check('title')
-        .isLength({ min: 3 })
-        .trim(),
-    check('imageUrl').isURL(),
-    check('price').isFloat(),
-    check('description')
-        .isLength({ min: 5, max: 200 })
-        .trim(),
+    [
+        check('title')
+            .isLength({ min: 3 })
+            .trim(),
+        check('imageUrl').isURL(),
+        check('price').isFloat(),
+        check('description')
+            .isLength({ min: 5, max: 200 })
+            .trim()
+    ],
     adminController.postEditProduct
 )
 router.post('/delete-product', adminController.postDeleteProduct)

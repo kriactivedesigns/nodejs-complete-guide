@@ -44,7 +44,8 @@ app.use(session({
 app.use(csrfProtection);
 app.use(flash());
 
-// Setting up user initially, ( commented out since we are using login )
+// Setting up user initially, this will be executed for every request
+// this is required since the req.user to be a mongoose object
 app.use((req,res,next) => {
     User.findById(req.session.user?._id)
         .then(user => {
