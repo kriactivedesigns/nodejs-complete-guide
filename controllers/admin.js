@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const { validationResult } = require('express-validator');
 
 exports.getProducts = (req, res,next) => {
     Product.find({ userId: req.user._id })
@@ -21,13 +22,35 @@ exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
-        editing: false
+        editing: false,
+        hasError: false,
+        errorMessage: null,
+        validationErrors: []
     })
 }
 
 // Saves the new product with post request
 exports.postAddProduct = (req, res, next) => {
     const { title, imageUrl, price, description } = req.body
+    
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            path: '/admin/add-product',
+            product: {
+                title: title,
+                imageUrl: imageUrl,
+                price: price,
+                description: description
+            },
+            editing: false,
+            hasError: true,
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        })
+    }
+
     const product = new Product({
         title: title,
         imageUrl: imageUrl,
@@ -35,6 +58,7 @@ exports.postAddProduct = (req, res, next) => {
         description: description,
         userId: req.session.user._id
     })
+
     product.save()
         .then(result => {
             console.log('New Product inserted...')
@@ -53,10 +77,13 @@ exports.getEditProduct = (req, res, next) => {
                 return res.redirect('/')
             }
             res.render('admin/edit-product', {
-                pageTitle: 'Add Product',
+                pageTitle: 'Edit Product',
                 path: '/admin/add-product',
                 product: product,
-                editing: true
+                editing: true,
+                hasError: false,
+                errorMessage: null,
+                validationErrors: []
             })
         })
         .catch(err => {
@@ -68,24 +95,43 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
     const { id, title, imageUrl, price, description } = req.body
 
+    const errors = validationResult(req)
+    console.log(errors)
+    if(!errors.isEmpty()) {
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            path: '/admin/add-product',
+            product: {
+                title: title,
+                imageUrl: imageUrl,
+                price: price,
+                description: description
+            },
+            editing: false,
+            hasError: true,
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        })
+    }
+
     Product.findOne({ _id: id, userId: req.user._id })
-    .then(product => {
-        if(!product) {
-            return res.redirect('/')
-        }
-        product.title = title;
-        product.imageUrl = imageUrl;
-        product.price = price;
-        product.description = description;
-        return product.save()
-    })
-    .then(result => {
-        console.log("Product updated...")
-        res.redirect('/admin/products')
-    })
-    .catch(err => {
-        console.log(err)
-    })
+        .then(product => {
+            if(!product) {
+                return res.redirect('/')
+            }
+            product.title = title;
+            product.imageUrl = imageUrl;
+            product.price = price;
+            product.description = description;
+            return product.save()
+        })
+        .then(result => {
+            console.log("Product updated...")
+            res.redirect('/admin/products')
+        })
+        .catch(err => {
+            console.log(err)
+        })
 }
 
 // Delete the product with id
