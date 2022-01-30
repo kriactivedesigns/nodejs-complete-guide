@@ -9,5 +9,9 @@ router.get('/signup',authController.getSignup)
 router.post('/signup',authController.postSignup)
 router.post('/login',authController.postLogin)
 router.post('/logout',authController.postLogout)
+router.get('/reset',authController.getResetPassword)
+router.post('/reset',authController.postResetPassword)
+router.get('/newpass/:token',authController.getNewPassword)
+router.post('/newpass',authController.postNewPassword)
 
 module.exports = router;

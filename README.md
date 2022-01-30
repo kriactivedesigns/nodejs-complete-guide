@@ -15,3 +15,8 @@
 
 Sequelize will handle the Database Table, so we don't need existing database table.
 But for convenience we will create a new table and keep the existing table in db
+
+Mongoose Handles MongoDB
+
+connect-flash for sending data after post request
+
