@@ -102,12 +102,13 @@ exports.postEditProduct = (req, res, next) => {
             pageTitle: 'Add Product',
             path: '/admin/add-product',
             product: {
+                _id: id,
                 title: title,
                 imageUrl: imageUrl,
                 price: price,
                 description: description
             },
-            editing: false,
+            editing: true,
             hasError: true,
             errorMessage: errors.array()[0].msg,
             validationErrors: errors.array()
