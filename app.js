@@ -44,29 +44,52 @@ app.use(session({
 app.use(csrfProtection);
 app.use(flash());
 
-// Setting up user initially, this will be executed for every request
-// this is required since the req.user to be a mongoose object
-app.use((req,res,next) => {
-    User.findById(req.session.user?._id)
-        .then(user => {
-            req.user = user
-            next()
-        })
-        .catch(err => console.log(err))
-})
-
 app.use((req,res,next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn;
     res.locals.csrfToken = req.csrfToken();
     next();
 })
 
+// Setting up user initially, this will be executed for every request
+// this is required since the req.user to be a mongoose object
+app.use((req,res,next) => {
+    try {
+        if(!req.session.user) {
+            return next()
+        }
+        User.findById(req.session.user._id)
+            .then(user => {
+                if(!user) {
+                    return next()
+                }
+                req.user = user
+                return next()
+            })
+            .catch(err => {
+                next(new Error(err))
+            })
+    }catch (err) {
+        throw new Error(err)
+    }
+})
+
 app.use(authRoutes);
 app.use('/admin', isAuth, adminRoutes);
 app.use(shopRoutes);
 
+app.get('/500', errorController.get500);
+
 // Handling all other requests which are not handled by the other roters
 app.use(errorController.get404);
+
+// Error handling middleware with extra argument 'error'
+app.use((error, req, res, next) => {
+    res.status(500).render('500',{
+        pageTitle: 'Error!!',
+        path: '/500',
+        isAuthenticated: req.session.isLoggedIn
+    })
+})
 
 mongoose.connect(MONGODB_URI)
 .then(result => {
