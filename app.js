@@ -7,6 +7,8 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
+const { v4: uuid } = require('uuid');
 
 const isAuth = require('./middleware/is-auth');
 const authRoutes = require('./routes/auth');
@@ -28,10 +30,31 @@ app.set('view engine', 'ejs')
 
 app.get('/favicon.ico',(req,res) => res.status(204));
 
+//#region Multer options
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images')
+    },
+    filename: (req, file, cb) => {
+        cb(null, uuid() + '-' + file.originalname)
+    }
+})
+
+const fileFilter = (req, file, cb) => {
+    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
+        cb(null, true)
+    } else {
+        cb(null, false)
+    }
+}
+//#endregion
+
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ storage: fileStorage, fileFilter : fileFilter }).single('image')); // expecting single image file with key 'image'
 
 // Serving static files from public folder
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // setting session
 app.use(session({
@@ -84,6 +107,7 @@ app.use(errorController.get404);
 
 // Error handling middleware with extra argument 'error'
 app.use((error, req, res, next) => {
+    console.log(error)
     res.status(500).render('500',{
         pageTitle: 'Error!!',
         path: '/500',

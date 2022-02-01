@@ -10,7 +10,7 @@
         <% if(errorMessage) { %>
             <div class="user-message user-message--error"><%= errorMessage %></div>
         <% } %>
-        <form class="product-form" action="/admin/<%= editing ? 'edit-product' : 'add-product' %>" method="POST">
+        <form class="product-form" action="/admin/<%= editing ? 'edit-product' : 'add-product' %>" method="POST" enctype="multipart/form-data">
             <div class="form-control">
                 <label for="title">Title</label>
                 <input 
@@ -21,6 +21,13 @@
                     value="<%= editing || hasError ? product.title : '' %>">
             </div>
             <div class="form-control">
+                <label for="image">Image</label>
+                <input 
+                    type="file" 
+                    name="image" 
+                    id="image">
+            </div>
+            <!-- <div class="form-control">
                 <label for="imageUrl">Image URL</label>
                 <input 
                     type="text" 
@@ -28,7 +35,7 @@
                     id="imageUrl" 
                     class="<%= validationErrors.find(error => error.param === 'imageUrl') ? 'invalid': '' %>"
                     value="<%= editing || hasError ? product.imageUrl : '' %>">
-            </div>
+            </div> -->
             <div class="form-control">
                 <label for="price">Price</label>
                 <input 

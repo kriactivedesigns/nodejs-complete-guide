@@ -26,7 +26,6 @@ exports.getLogin = (req,res,next) => {
 exports.postLogin = (req,res,next) => {
     const { email, password } = req.body
     const errors = validationResult(req)
-    console.log(errors.array())
     if(!errors.isEmpty()){
         return res.status(422).render('auth/login',{
             pageTitle: 'Login',
@@ -99,7 +98,6 @@ exports.getSignup = (req,res,next) => {
 exports.postSignup = (req,res,next) => {
     const { name, email, password, confirmPassword } = req.body;
     const errors = validationResult(req)
-    console.log(errors.array())
     if(!errors.isEmpty()){
         return res.status(422).render('auth/signup',{
                 pageTitle: 'Signup',
@@ -160,8 +158,6 @@ exports.getResetPassword = (req,res,next) => {
     }else {
         link = null
     }
-    console.log("error", error)
-    console.log("link", link)
     res.render('auth/reset-password',{
         pageTitle: 'Reset Password',
         path: '/reset',
@@ -181,8 +177,7 @@ exports.postResetPassword = (req,res,next) => {
 
             crypto.randomBytes(32, (err,buffer) => {
                 if(err){
-                    console.log(err)
-                    return res.redirect('/reset')
+                    return next(new Error(err))
                 }
                 const token = buffer.toString('hex')
                 user.resetToken = token;

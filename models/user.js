@@ -19,7 +19,7 @@ const userSchema = new Schema({
     cart: {
         items: [
             {
-                productId: {
+                product: {
                     type: Schema.Types.ObjectId,
                     required: true,
                     ref: 'Product'
@@ -36,13 +36,13 @@ const userSchema = new Schema({
 userSchema.methods.addToCart = function(product) {
     const updatedCart = this.cart
     const cartProductIndex = updatedCart.items.findIndex(cp => {
-        return cp.productId.toString() === product._id.toString()
+        return cp.product.toString() === product._id.toString()
     } )
 
     if(cartProductIndex >= 0) {
         updatedCart.items[cartProductIndex].quantity = this.cart.items[cartProductIndex].quantity + 1
     }else {
-        updatedCart.items.push({ productId: product._id, quantity: 1 })
+        updatedCart.items.push({ product: product._id, quantity: 1 })
     }
 
     this.cart = updatedCart
@@ -50,10 +50,10 @@ userSchema.methods.addToCart = function(product) {
 }
 
 userSchema.methods.getCartItems = function() {
-    return this.populate('cart.items.productId')
+    return this.populate('cart.items.product')
         .then(user => {
             const updatedCartItems = user.cart.items.filter(product => {
-                if(product.productId) {
+                if(product.product) {
                     return product
                 }
             })
@@ -66,7 +66,7 @@ userSchema.methods.getCartItems = function() {
 
 userSchema.methods.deleteCartItem = function(productId) {
     const updatedCartItems = this.cart.items.filter(product => {
-        return product.productId.toString() !== productId.toString()
+        return product.product.toString() !== productId.toString()
     })
     this.cart.items = updatedCartItems;
     return this.save()
