@@ -3,29 +3,49 @@ const Order = require('../models/order');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 
+const ITEMS_PER_PAGE = 5;
+
 exports.getProducts = (req, res,next) => {
+    const page = req.query.page ? Number(req.query.page) : 1
+    let totalPages
     Product.find()
-    .then(products => {
-        res.render('shop/product-list', {
-            prods: products,
-            pageTitle: 'All Products',
-            path: '/products'
+        .count()
+        .then(numberOfProducts => {
+            totalPages = Math.floor(numberOfProducts / ITEMS_PER_PAGE) + (numberOfProducts % ITEMS_PER_PAGE);
+            return Product.find().skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
         })
-    })
-    .catch(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
-    })
+        .then(products => {
+            res.render('shop/product-list', {
+                prods: products,
+                pageTitle: 'All Products',
+                path: '/products',
+                currentPage: page,
+                totalPages: totalPages
+            })
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
 }
 
 exports.getIndex = (req,res,next) => {
+    const page = req.query.page ? Number(req.query.page) : 1
+    let totalPages
     Product.find()
+        .count()
+        .then(numberOfProducts => {
+            totalPages = Math.floor(numberOfProducts / ITEMS_PER_PAGE) + (numberOfProducts % ITEMS_PER_PAGE);
+            return Product.find().skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
+        })
         .then(products => {
             res.render('shop/index', {
                 prods: products,
                 pageTitle: 'All Products',
-                path: '/'
+                path: '/',
+                currentPage: page,
+                totalPages: totalPages
             })
         })
         .catch(err => {

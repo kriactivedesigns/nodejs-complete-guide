@@ -2,15 +2,24 @@ const Product = require('../models/product');
 const { validationResult } = require('express-validator');
 const fileHelper = require('../util/file');
 
+const ITEMS_PER_PAGE = 5;
+
 exports.getProducts = (req, res,next) => {
+    const page = req.query.page ? Number(req.query.page) : 1
+    let totalPages
     Product.find({ userId: req.user._id })
-        // .select('title price -_id') // retrives only selected fields
-        //.populate('userId') // tells mongoose to populate data in that field rather than just userid
+        .count()
+        .then(numberOfProducts => {
+            totalPages = Math.floor(numberOfProducts / ITEMS_PER_PAGE) + (numberOfProducts % ITEMS_PER_PAGE);
+            return Product.find({ userId: req.user._id }).skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
+        })
         .then(products => {
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'All Products',
-                path: '/admin/products'
+                path: '/admin/products',
+                currentPage: page,
+                totalPages: totalPages
             })
         })
         .catch(err => {

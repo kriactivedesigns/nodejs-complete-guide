@@ -31,10 +31,11 @@
                                     <%- include('../includes/add-to-cart.ejs', { product }) %>
                                 </div>
                             </article>
-                            <% } %>
-                    </div>
-                    <% } else { %>
-                        <h1>No Products Found!</h1>
                         <% } %>
+                    </div>
+                    <%- include('../includes/pagination.ejs'), { totalPages: totalPages, currentPage: currentPage } %>
+                <% } else { %>
+                    <h1>No Products Found!</h1>
+                <% } %>
             </main>
             <%- include('../includes/end.ejs') %>
