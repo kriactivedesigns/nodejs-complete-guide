@@ -10,7 +10,8 @@ exports.getProducts = (req, res,next) => {
     Product.find({ userId: req.user._id })
         .count()
         .then(numberOfProducts => {
-            totalPages = Math.floor(numberOfProducts / ITEMS_PER_PAGE) + (numberOfProducts % ITEMS_PER_PAGE);
+            console.log(numberOfProducts)
+            totalPages = Math.ceil(numberOfProducts / ITEMS_PER_PAGE)
             return Product.find({ userId: req.user._id }).skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE)
         })
         .then(products => {
@@ -181,8 +182,8 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 // Delete the product with id
-exports.postDeleteProduct = (req, res, next) => {
-    const id = req.body.productId;
+exports.deleteProduct = (req, res, next) => {
+    const id = req.params.productId;
     Product.findById(id).then(product => {
         if(!product) {
             return next(new Error('Product not found.'))
@@ -192,11 +193,9 @@ exports.postDeleteProduct = (req, res, next) => {
     })
     .then(() => {
         console.log("Product deleted...")
-        res.redirect('/admin/products')
+        res.status(200).json({ message: 'Success' });
     })
     .catch(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
+        res.status(500).json({ message: 'Deleting Product Failed!!' })
     })
 }
