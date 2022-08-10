@@ -20,3 +20,5 @@ Mongoose Handles MongoDB
 
 connect-flash for sending data after post request
 
+Completed Application Without REST API (View based)
+
