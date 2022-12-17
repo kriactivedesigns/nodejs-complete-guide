@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const Post = require('../models/post');
+const User = require('../models/user');
 
 exports.getPosts = (req, res, next) => {
     const currentPage = req.query.page || 1;
@@ -45,7 +46,7 @@ exports.createPost = (req, res, next) => {
     const title = req.body.title;
     const imageUrl = req.file.path.replace("\\","/");
     const content = req.body.content;
-    const creator = { name: 'Arun Mohanan' };
+    let creator = req.userId;
 
     const post = new Post({
         title,
@@ -56,9 +57,19 @@ exports.createPost = (req, res, next) => {
 
     post.save()
     .then(result => {
+        return User.findById(req.userId)
+    }).then(user => {
+        creator = user;
+        user.posts.push(post)
+        return user.save()
+    }).then(result => {
         res.status(200).json({
             message: "Post created successfully",
-            post: result
+            post: post,
+            creator: {
+                _id: creator._id,
+                name: creator.name
+            }
         })
     })
     .catch(error => {
@@ -89,12 +100,55 @@ exports.getPost = (req, res, next) => {
     })
 };
 
+exports.getStatus = (req, res, next) => {
+    User.findById(req.userId)
+    .then(user => {
+        res.status(200).json({ message: 'Status Fetched', status: user.status })
+    })
+    .catch(error => {
+        if(!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error);
+    })
+}
+
+exports.updateStatus = (req, res, next) => {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        const error = new Error("Validation failed!, entered data is incorrect")
+        error.statusCode = 422
+        throw error;
+    }
+
+    const status = req.body.status;
+    User.findById(req.userId)
+    .then(user => {
+        user.status = status;
+        return user.save()
+    }).then(resullt => {
+        res.status(200).json({ message: 'Status Updated', status: status })
+    })
+    .catch(error => {
+        if(!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error);
+    })
+}
+
 exports.updatePost = (req, res, next) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()) {
         const error = new Error("Validation failed!, entered data is incorrect")
         error.statusCode = 422
         throw error;
+    }
+
+    if(post.creator.toString() !== req.userId) {
+        const err = new Error('Not Authorized!!')
+        err.statusCode = 401;
+        throw err
     }
    
     const postId = req.params.postId;
@@ -150,8 +204,19 @@ exports.deletePost = (req, res, next) => {
             throw error;
         }
 
+        if(post.creator.toString() !== req.userId) {
+            const err = new Error('Not Authorized!!')
+            err.statusCode = 401;
+            throw err
+        }
+
         clearImage(post.imageUrl);
         return Post.findByIdAndRemove(postId);
+    }).then(result => {
+        return User.findById(req.userId)
+    }).then(user => {
+        user.posts.pull(postId);
+        return user.save();
     }).then(result => {
         res.status(200).json({ message: "Post deleted", data: result })
     })

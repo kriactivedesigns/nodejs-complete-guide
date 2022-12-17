@@ -55,8 +55,12 @@ app.use((error, req, res, next) => {
     res.status(status).json({ message: message, data: data })
 });
 
-mongoose.connect(MONGODB_URI)
-.catch(err => console.log(err));
-app.listen(8080, () => {
-    console.log("REST Server Runs at: 8080")
-});
+mongoose.connect(MONGODB_URI).then(
+    () => { 
+        console.log('DB Connected') 
+        app.listen(8080, () => {
+            console.log("REST Server Runs at: 8080")
+        });
+    },
+    (err) => { console.log(err) }
+)

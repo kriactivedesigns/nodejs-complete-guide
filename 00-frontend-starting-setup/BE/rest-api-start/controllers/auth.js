@@ -2,6 +2,7 @@ const User = require('../models/user');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const constants = require('../constants/global-constants');
 
 exports.signup = (req, res, next) => {
     const errors = validationResult(req);
@@ -64,7 +65,7 @@ exports.login = (req, res, next) => {
                     email: loadedUser.email,
                     userId: loadedUser._id.toString()
                 },
-                'secretkey',
+                constants.GlobalConstants.secretKey,
                 { expiresIn: '1h' }
             )
 
