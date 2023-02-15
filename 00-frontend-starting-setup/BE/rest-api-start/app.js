@@ -58,9 +58,11 @@ app.use((error, req, res, next) => {
 mongoose.connect(MONGODB_URI).then(
     () => { 
         console.log('DB Connected') 
-        app.listen(8080, () => {
-            console.log("REST Server Runs at: 8080")
-        });
+        const server = app.listen(8080)
+        const io = require('socket.io')(server);
+        io.on('connection', socket => {
+            console.log('Client Connected...')
+        })
     },
     (err) => { console.log(err) }
 )
